@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>UnwantedMethodCallsAnalyzer</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Octopus Deploy</Authors>
+    <PackageProjectUrl>https://github.com/OctopusDeploy/RoslynAnalyzers</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/OctopusDeploy/RoslynAnalyzers</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Roslyn analyzer that allows specifying unwanted method calls in your source code</Description>
+    <Copyright>Octopus Deploy Pty Ltd</Copyright>
+    <PackageTags>analyzer;roslyn</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <!--
+  Analyzer external nuget dependencies dont work particularly well so we need to bring along our dependent dlls manually following the process outlined here: 
+  https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md#use-functionality-from-nuget-packages
+  
+  In our case we need to follow the generation-time dependencies section
+  -->
+  <ItemGroup>
+    <!--Full dependency graph of System.Text.Json non-framework assemblies-->
+    <PackageReference Include="System.Text.Json" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
+    <!--Package the System.Text.Json dependency graph dlls alongside the generator assembly--> 
+    <None Include="$(PkgSystem_Text_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(PkgSystem_Text_Encodings_Web)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UnwantedMethodCallsAnalyzer\UnwantedMethodCallsAnalyzer.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\UnwantedMethodCallsAnalyzer.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
