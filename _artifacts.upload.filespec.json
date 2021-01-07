@@ -1,0 +1,7 @@
+{
+  "files": [
+    {
+      "pattern": "_artifacts/nuget/*", "target": "nuget"
+    }
+  ]
+}
