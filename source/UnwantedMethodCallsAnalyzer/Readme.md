@@ -16,7 +16,8 @@ To configure what methods are not allowed you need to add `unwanted_method_calls
   </ItemGroup>
 ```
 
-The configuration file format is as such:
+The configuration file format is as such:  
+**Comments in the config file are not supported**
 
 ```json
 {

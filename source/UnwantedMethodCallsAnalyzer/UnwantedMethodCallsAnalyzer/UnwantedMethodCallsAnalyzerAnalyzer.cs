@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text.Json;
 
 namespace UnwantedMethodCallsAnalyzer
 {
@@ -38,12 +37,7 @@ namespace UnwantedMethodCallsAnalyzer
             var sourceText = configurationFile?.GetText()?.ToString();
             if (sourceText != null)
             {
-                var serializationOptions = new JsonSerializerOptions()
-                {
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                    AllowTrailingCommas = true,
-                };
-                var root = JsonSerializer.Deserialize<UnwantedMethodCalls>(sourceText, serializationOptions);
+                var root = SimpleJson.SimpleJson.DeserializeObject<UnwantedMethodCalls>(sourceText);
                 _unwantedMethodsCache = root?.UnwantedMethods;
             }
 

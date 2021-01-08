@@ -12,7 +12,6 @@ namespace UnwantedMethodCallsAnalyzer.Test
 {
   ""UnwantedMethods"": [
     {
-      // test comment for json parsing
       ""TypeNamespace"": ""System.Diagnostics.Process"",
       ""MethodName"": ""Start"",
       ""ExcludeCheckingTypes"": [
