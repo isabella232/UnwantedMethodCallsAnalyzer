@@ -12,11 +12,16 @@ namespace UnwantedMethodCallsAnalyzer
     {
         public const string DiagnosticId = "UnwantedMethodCallAnalyzer";
         public const string Title = "Unwanted Method Call found";
-        public const string MessageFormat = "Unwanted method '{0}' called";
+        /* Example output:
+         * Unwanted method 'System.Diagnostics.Process.Start' called
+         * <UnwantedReason>
+         */
+        public const string MessageFormat = "Unwanted method '{0}' called{1}";
         public const string Category = "UnwantedMethodCall";
         public const string ConfigurationFileName = "unwanted_method_calls.json";
+        public const string Description = "If this type should be allowed to call this method, please update the '" + ConfigurationFileName + "' ExcludeCheckingTypes array.";
         
-        public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
+        public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
         
         private static UnwantedMethod[] _unwantedMethodsCache;
 
@@ -62,7 +67,16 @@ namespace UnwantedMethodCallsAnalyzer
                 
                 if (memberContainingType == unwantedMethod.TypeNamespace && memberSymbol.Name == unwantedMethod.MethodName)
                 {
-                    var diagnostic = Diagnostic.Create(Rule, memberAccessExpression.GetLocation(), $"{memberContainingType}.{memberSymbol.Name}");
+                    var fullyQualifiedOffender = $"{memberContainingType}.{memberSymbol.Name}";
+                    var unwantedReason = string.IsNullOrWhiteSpace(unwantedMethod.UnwantedReason)
+                        ? null
+                        : $"\nUnwanted Reason: {unwantedMethod.UnwantedReason}";
+                    var diagnostic = Diagnostic.Create(
+                        Rule, 
+                        memberAccessExpression.GetLocation(), 
+                        fullyQualifiedOffender,
+                        unwantedReason,
+                        currentType);
                     context.ReportDiagnostic(diagnostic);
                 }
             }
@@ -78,6 +92,8 @@ namespace UnwantedMethodCallsAnalyzer
             public string TypeNamespace { get; set; }
 
             public string MethodName { get; set; }
+
+            public string UnwantedReason { get; set; }
 
             public string[] ExcludeCheckingTypes { get; set; } = { };
         }

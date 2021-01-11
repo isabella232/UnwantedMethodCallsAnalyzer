@@ -14,6 +14,7 @@ namespace UnwantedMethodCallsAnalyzer.Test
     {
       ""TypeNamespace"": ""System.Diagnostics.Process"",
       ""MethodName"": ""Start"",
+      ""UnwantedReason"": ""This would be bad to call""
       ""ExcludeCheckingTypes"": [
         ""ConsoleApplication1.ShouldBeIgnored""
       ]
@@ -83,7 +84,9 @@ namespace ConsoleApplication1
     }
 }";
 
-            var expectedMessage = UnwantedMethodCallAnalyzer.MessageFormat.Replace("{0}", "System.Diagnostics.Process.Start");
+            var expectedMessage = UnwantedMethodCallAnalyzer.MessageFormat
+                .Replace("{0}", "System.Diagnostics.Process.Start")
+                .Replace("{1}", "\nUnwanted Reason: This would be bad to call");
             var expectedRule = new DiagnosticDescriptor(UnwantedMethodCallAnalyzer.DiagnosticId,
                 UnwantedMethodCallAnalyzer.Title,
                 expectedMessage,

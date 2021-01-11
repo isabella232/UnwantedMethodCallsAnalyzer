@@ -25,6 +25,7 @@ The configuration file format is as such:
     {
       "TypeNamespace": "System.Diagnostics.Process",
       "MethodName": "Start",
+      "UnwantedReason": "Process.Start can leave us open to malicious code execution",
       "ExcludeCheckingTypes": [
         "MyNamespace.ShouldBeIgnoredClass"
       ]
@@ -32,3 +33,5 @@ The configuration file format is as such:
   ]
 }
 ```
+
+`TypeNamespace` and `MethodName` are required values.
