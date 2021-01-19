@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+﻿using System;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Microsoft.CodeAnalysis.VisualBasic.Testing;
 
@@ -9,9 +10,6 @@ namespace UnwantedMethodCallsAnalyzer.Test
     {
         public class Test : VisualBasicAnalyzerTest<TAnalyzer, XUnitVerifier>
         {
-            public Test()
-            {
-            }
         }
     }
 }

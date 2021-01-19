@@ -1,29 +1,30 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace UnwantedMethodCallsAnalyzer.Test
 {
     public static partial class CSharpAnalyzerVerifier<TAnalyzer>
         where TAnalyzer : DiagnosticAnalyzer, new()
     {
-        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic()"/>
+        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic()" />
         public static DiagnosticResult Diagnostic()
             => CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic();
 
-        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic(string)"/>
+        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic(string)" />
         public static DiagnosticResult Diagnostic(string diagnosticId)
             => CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic(diagnosticId);
 
-        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)"/>
+        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.Diagnostic(DiagnosticDescriptor)" />
         public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor)
             => CSharpAnalyzerVerifier<TAnalyzer, XUnitVerifier>.Diagnostic(descriptor);
 
-        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.VerifyAnalyzerAsync(string, DiagnosticResult[])"/>
+        /// <inheritdoc cref="AnalyzerVerifier{TAnalyzer, TTest, TVerifier}.VerifyAnalyzerAsync(string, DiagnosticResult[])" />
         public static async Task VerifyAnalyzerAsync(string source, (string filename, string fileContent)[] additionalFiles = null, params DiagnosticResult[] expected)
         {
             var test = new Test
@@ -32,12 +33,8 @@ namespace UnwantedMethodCallsAnalyzer.Test
             };
 
             if (additionalFiles != null)
-            {
                 foreach (var additionalFile in additionalFiles)
-                {
                     test.TestState.AdditionalFiles.Add(additionalFile);
-                }
-            }
 
             test.ExpectedDiagnostics.AddRange(expected);
             await test.RunAsync(CancellationToken.None);

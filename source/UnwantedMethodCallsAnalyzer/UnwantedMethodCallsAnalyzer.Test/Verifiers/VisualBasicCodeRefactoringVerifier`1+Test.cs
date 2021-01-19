@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CodeRefactorings;
+﻿using System;
+using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 using Microsoft.CodeAnalysis.VisualBasic.Testing;
 

@@ -1,9 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace UnwantedMethodCallsAnalyzer
 {
@@ -11,7 +12,9 @@ namespace UnwantedMethodCallsAnalyzer
     public class UnwantedMethodCallAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "UnwantedMethodCallAnalyzer";
+
         public const string Title = "Unwanted Method Call found";
+
         /* Example output:
          * Unwanted method 'System.Diagnostics.Process.Start' called
          * <UnwantedReason>
@@ -20,10 +23,16 @@ namespace UnwantedMethodCallsAnalyzer
         public const string Category = "UnwantedMethodCall";
         public const string ConfigurationFileName = "unwanted_method_calls.json";
         public const string Description = "If this type should be allowed to call this method, please update the '" + ConfigurationFileName + "' ExcludeCheckingTypes array.";
-        
-        public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-        
-        private static UnwantedMethod[] _unwantedMethodsCache;
+
+        public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Error,
+            true,
+            Description);
+
+        static UnwantedMethod[] _unwantedMethodsCache;
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -35,7 +44,7 @@ namespace UnwantedMethodCallsAnalyzer
             context.RegisterCompilationStartAction(CacheUnwantedMethodsFromConfig);
         }
 
-        private void CacheUnwantedMethodsFromConfig(CompilationStartAnalysisContext context)
+        void CacheUnwantedMethodsFromConfig(CompilationStartAnalysisContext context)
         {
             // https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Using%20Additional%20Files.md
             var configurationFile = context.Options.AdditionalFiles.FirstOrDefault(x => x.Path.Contains(ConfigurationFileName));
@@ -50,7 +59,7 @@ namespace UnwantedMethodCallsAnalyzer
                 context.RegisterSyntaxNodeAction(CheckUnwantedMethodCalls, SyntaxKind.InvocationExpression);
         }
 
-        private void CheckUnwantedMethodCalls(SyntaxNodeAnalysisContext context)
+        void CheckUnwantedMethodCalls(SyntaxNodeAnalysisContext context)
         {
             var expressionSyntax = (InvocationExpressionSyntax)context.Node;
             var memberAccessExpression = expressionSyntax.Expression as MemberAccessExpressionSyntax;
@@ -64,7 +73,7 @@ namespace UnwantedMethodCallsAnalyzer
             foreach (var unwantedMethod in _unwantedMethodsCache)
             {
                 if (unwantedMethod.ExcludeCheckingTypes.Contains(currentType)) continue;
-                
+
                 if (memberContainingType == unwantedMethod.TypeNamespace && memberSymbol.Name == unwantedMethod.MethodName)
                 {
                     var fullyQualifiedOffender = $"{memberContainingType}.{memberSymbol.Name}";
@@ -72,8 +81,8 @@ namespace UnwantedMethodCallsAnalyzer
                         ? null
                         : $"\nUnwanted Reason: {unwantedMethod.UnwantedReason}";
                     var diagnostic = Diagnostic.Create(
-                        Rule, 
-                        memberAccessExpression.GetLocation(), 
+                        Rule,
+                        memberAccessExpression.GetLocation(),
                         fullyQualifiedOffender,
                         unwantedReason,
                         currentType);
@@ -82,12 +91,12 @@ namespace UnwantedMethodCallsAnalyzer
             }
         }
 
-        private class UnwantedMethodCalls
+        class UnwantedMethodCalls
         {
             public UnwantedMethod[] UnwantedMethods { get; set; }
         }
 
-        private class UnwantedMethod
+        class UnwantedMethod
         {
             public string TypeNamespace { get; set; }
 
@@ -95,7 +104,7 @@ namespace UnwantedMethodCallsAnalyzer
 
             public string UnwantedReason { get; set; }
 
-            public string[] ExcludeCheckingTypes { get; set; } = { };
+            public string[] ExcludeCheckingTypes { get; } = { };
         }
     }
 }

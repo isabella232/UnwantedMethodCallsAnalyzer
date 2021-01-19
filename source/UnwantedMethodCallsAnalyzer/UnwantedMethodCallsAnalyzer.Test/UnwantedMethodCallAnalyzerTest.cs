@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
 using Xunit;
@@ -8,7 +9,7 @@ namespace UnwantedMethodCallsAnalyzer.Test
 {
     public class UnwantedMethodCallAnalyzerTest
     {
-        private const string AdditionalFileText = @"
+        const string AdditionalFileText = @"
 {
   ""UnwantedMethods"": [
     {
@@ -23,7 +24,7 @@ namespace UnwantedMethodCallsAnalyzer.Test
 }
 ";
 
-        private static readonly (string AdditionalFileName, string AdditionalFileText)[] AdditionalFiles = new[]
+        static readonly (string AdditionalFileName, string AdditionalFileText)[] AdditionalFiles =
         {
             (UnwantedMethodCallAnalyzer.ConfigurationFileName, AdditionalFileText)
         };
@@ -92,11 +93,14 @@ namespace ConsoleApplication1
                 expectedMessage,
                 UnwantedMethodCallAnalyzer.Category,
                 DiagnosticSeverity.Error,
-                isEnabledByDefault: true);
+                true);
             var result1 = new DiagnosticResult(expectedRule).WithLocation(0);
             var result2 = new DiagnosticResult(expectedRule).WithLocation(1);
 
-            await VerifyCS.VerifyAnalyzerAsync(test, AdditionalFiles, new[] {result1, result2});
+            await VerifyCS.VerifyAnalyzerAsync(test,
+                AdditionalFiles,
+                result1,
+                result2);
         }
 
         [Fact]
@@ -123,7 +127,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            
+
             await VerifyCS.VerifyAnalyzerAsync(test, AdditionalFiles);
         }
 
@@ -153,7 +157,7 @@ namespace ConsoleApplication1
     }
 }";
 
-            var additionalFiles = new[] {(UnwantedMethodCallAnalyzer.ConfigurationFileName, additionalFileText: emptyJson)};
+            var additionalFiles = new[] { (UnwantedMethodCallAnalyzer.ConfigurationFileName, additionalFileText: emptyJson) };
             await VerifyCS.VerifyAnalyzerAsync(test, additionalFiles);
         }
     }
