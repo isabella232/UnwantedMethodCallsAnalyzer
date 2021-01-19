@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Xunit;
-using VerifyCS = UnwantedMethodCallsAnalyzer.Test.CSharpAnalyzerVerifier<UnwantedMethodCallsAnalyzer.UnwantedMethodCallAnalyzer>;
+using Microsoft.CodeAnalysis.Testing.Verifiers;
+using NUnit.Framework;
+using Octopus.RoslynAnalysers;
+using Verify = Microsoft.CodeAnalysis.CSharp.Testing.NUnit.AnalyzerVerifier<Octopus.RoslynAnalysers.UnwantedMethodCallAnalyzer>;
+using static Microsoft.CodeAnalysis.Testing.DiagnosticResult;
 
-namespace UnwantedMethodCallsAnalyzer.Test
+namespace Tests
 {
     public class UnwantedMethodCallAnalyzerTest
     {
@@ -29,15 +33,14 @@ namespace UnwantedMethodCallsAnalyzer.Test
             (UnwantedMethodCallAnalyzer.ConfigurationFileName, AdditionalFileText)
         };
 
-        [Fact]
+        [Test]
         public async Task EmptySourceSucceeds()
         {
             var test = @"";
-
-            await VerifyCS.VerifyAnalyzerAsync(test);
+            await Verify.VerifyAnalyzerAsync(test);
         }
 
-        [Fact]
+        [Test]
         public async Task SourceWithBadCallsFails()
         {
             var test = @"
@@ -97,13 +100,15 @@ namespace ConsoleApplication1
             var result1 = new DiagnosticResult(expectedRule).WithLocation(0);
             var result2 = new DiagnosticResult(expectedRule).WithLocation(1);
 
-            await VerifyCS.VerifyAnalyzerAsync(test,
+            await VerifyWithAdditionalFiles(
+                test,
                 AdditionalFiles,
                 result1,
-                result2);
+                result2
+            );
         }
 
-        [Fact]
+        [Test]
         public async Task SourceWithNoUnwantedCallsSucceeds()
         {
             var test = @"
@@ -128,10 +133,10 @@ namespace ConsoleApplication1
     }
 }";
 
-            await VerifyCS.VerifyAnalyzerAsync(test, AdditionalFiles);
+            await VerifyWithAdditionalFiles(test, AdditionalFiles);
         }
 
-        [Fact]
+        [Test]
         public async Task EmptyJsonAdditionalFileTextSucceeds()
         {
             var emptyJson = "{}";
@@ -158,7 +163,23 @@ namespace ConsoleApplication1
 }";
 
             var additionalFiles = new[] { (UnwantedMethodCallAnalyzer.ConfigurationFileName, additionalFileText: emptyJson) };
-            await VerifyCS.VerifyAnalyzerAsync(test, additionalFiles);
+            await VerifyWithAdditionalFiles(test, additionalFiles);
+        }
+
+        async Task VerifyWithAdditionalFiles(string source,
+            (string ConfigurationFileName, string additionalFileText)[] additionalFiles,
+            params DiagnosticResult[] expectedDiagnostics)
+        {
+            var test = new CSharpAnalyzerTest<UnwantedMethodCallAnalyzer, NUnitVerifier>();
+            test.TestState.Sources.Add(source);
+
+            foreach (var diag in expectedDiagnostics)
+                test.TestState.ExpectedDiagnostics.Add(diag);
+
+            foreach (var file in additionalFiles)
+                test.TestState.AdditionalFiles.Add(file);
+
+            await test.RunAsync();
         }
     }
 }
