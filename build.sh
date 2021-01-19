@@ -9,11 +9,11 @@ SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 # CONFIGURATION
 ###########################################################################
 
-BUILD_PROJECT_FILE="$SCRIPT_DIR/_BUILD_DIRECTORY_/_BUILD_PROJECT_NAME_.csproj"
-TEMP_DIRECTORY="$SCRIPT_DIR/_ROOT_DIRECTORY_/.tmp"
+BUILD_PROJECT_FILE="$SCRIPT_DIR/build/_build.csproj"
+TEMP_DIRECTORY="$SCRIPT_DIR//.tmp"
 
-DOTNET_GLOBAL_FILE="$SCRIPT_DIR/_ROOT_DIRECTORY_/global.json"
-DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"
+DOTNET_GLOBAL_FILE="$SCRIPT_DIR//global.json"
+DOTNET_INSTALL_URL="https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh"
 DOTNET_CHANNEL="Current"
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
