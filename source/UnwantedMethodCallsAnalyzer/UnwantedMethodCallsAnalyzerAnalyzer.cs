@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace UnwantedMethodCallsAnalyzer
+namespace Octopus.UnwantedMethodCallsAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnwantedMethodCallAnalyzer : DiagnosticAnalyzer
@@ -32,7 +32,7 @@ namespace UnwantedMethodCallsAnalyzer
             true,
             Description);
 
-        static UnwantedMethod[] _unwantedMethodsCache;
+        static UnwantedMethod[] unwantedMethodsCache = new UnwantedMethod[0];
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -51,11 +51,11 @@ namespace UnwantedMethodCallsAnalyzer
             var sourceText = configurationFile?.GetText()?.ToString();
             if (sourceText != null)
             {
-                var root = SimpleJson.SimpleJson.DeserializeObject<UnwantedMethodCalls>(sourceText);
-                _unwantedMethodsCache = root?.UnwantedMethods;
+                var root = SimpleJson.DeserializeObject<UnwantedMethodCalls>(sourceText);
+                unwantedMethodsCache = root?.UnwantedMethods ?? new UnwantedMethod[0];
             }
 
-            if (_unwantedMethodsCache != null && _unwantedMethodsCache.Any())
+            if (unwantedMethodsCache.Any())
                 context.RegisterSyntaxNodeAction(CheckUnwantedMethodCalls, SyntaxKind.InvocationExpression);
         }
 
@@ -70,7 +70,7 @@ namespace UnwantedMethodCallsAnalyzer
 
             var currentType = context.ContainingSymbol?.ContainingType.ToString();
             var memberContainingType = memberSymbol.ContainingType.ToString();
-            foreach (var unwantedMethod in _unwantedMethodsCache)
+            foreach (var unwantedMethod in unwantedMethodsCache)
             {
                 if (unwantedMethod.ExcludeCheckingTypes.Contains(currentType)) continue;
 
@@ -93,18 +93,18 @@ namespace UnwantedMethodCallsAnalyzer
 
         class UnwantedMethodCalls
         {
-            public UnwantedMethod[] UnwantedMethods { get; set; }
+            public UnwantedMethod[] UnwantedMethods { get; set; } = { };
         }
 
         class UnwantedMethod
         {
-            public string TypeNamespace { get; set; }
+            public string TypeNamespace { get; set; } = "";
 
-            public string MethodName { get; set; }
+            public string MethodName { get; set; } = "";
 
-            public string UnwantedReason { get; set; }
+            public string UnwantedReason { get; set; } = "";
 
-            public string[] ExcludeCheckingTypes { get; } = { };
+            public string[] ExcludeCheckingTypes { get; set; } = { };
         }
     }
 }

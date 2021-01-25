@@ -1,3 +1,4 @@
+#nullable disable
 //-----------------------------------------------------------------------
 // <copyright file="SimpleJson.cs" company="The Outercurve Foundation">
 //    Copyright (c) 2011, The Outercurve Foundation.
@@ -49,7 +50,6 @@
 #if NETFX_CORE
 #define SIMPLE_JSON_TYPEINFO
 #endif
-
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
@@ -60,7 +60,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using SimpleJson.Reflection;
+using Octopus.UnwantedMethodCallsAnalyzer.Reflection;
 #if !SIMPLE_JSON_NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
@@ -71,7 +71,7 @@ using System.Dynamic;
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace SimpleJson
+namespace Octopus.UnwantedMethodCallsAnalyzer
 {
     /// <summary>
     /// Represents the json array.
@@ -454,14 +454,11 @@ namespace SimpleJson
         }
 #endif
     }
-}
 
-namespace SimpleJson
-{
     /// <summary>
     /// This class encodes and decodes JSON strings.
     /// Spec. details, see http://www.json.org/
-    /// 
+    ///
     /// JSON uses Arrays and Objects. These correspond here to the datatypes JsonArray(IList&lt;object>) and JsonObject(IDictionary&lt;string,object>).
     /// All numbers are parsed to doubles.
     /// </summary>
@@ -2088,8 +2085,9 @@ namespace SimpleJson
                     => _dictionary.GetEnumerator();
             }
         }
-    }
-}
+
 // ReSharper restore LoopCanBeConvertedToQuery
 // ReSharper restore RedundantExplicitArrayCreation
 // ReSharper restore SuggestUseVarKeywordEvident
+    }
+}

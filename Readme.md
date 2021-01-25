@@ -1,21 +1,37 @@
-# Roslyn analyzers
+# Unwanted method calls analyzer
 
 ## Purpose
 
-This repository stores independent roslyn analyzers we use internally at Octopus Deploy.
+This analyzer allows specifying methods that should not be called in our source code.
 
-## Doco
+## Installation and Setup
 
-Each analyzer provides it's own documentation that can be found here:
+The unwanted method calls analyzer can be added to an existing project via the nuget package.
 
-- [Unwanted Method Calls Analyzer](source/UnwantedMethodCallsAnalyzer/Readme.md)
+To configure what methods are not allowed you need to add `unwanted_method_calls.json` as an additional file to the project.
 
-## Creating your own Analyzer
+```xml
+  <ItemGroup>
+    <AdditionalFiles Include="unwanted_method_calls.json" />
+  </ItemGroup>
+```
 
-1. Follow the instructions in [this blog post](https://devblogs.microsoft.com/dotnet/how-to-write-a-roslyn-analyzer/) to setup your Visual Studio.
-   - [Roslyn analyzers documentation](https://github.com/dotnet/roslyn/tree/master/docs/analyzers)
-   - [Example analyzers](https://github.com/dotnet/roslyn-sdk/tree/master/samples/CSharp)
-2. Test your nuget package analyzer against a project locally
-3. Create a build pipeline to publish your analyzer nuget package
-4. Update this readme to point to your analyzers root readme file
-5. Let others know it exists!
+The configuration file format is as such:  
+**Comments in the config file are not supported**
+
+```json
+{
+  "UnwantedMethods": [
+    {
+      "TypeNamespace": "System.Diagnostics.Process",
+      "MethodName": "Start",
+      "UnwantedReason": "Process.Start can leave us open to malicious code execution",
+      "ExcludeCheckingTypes": [
+        "MyNamespace.ShouldBeIgnoredClass"
+      ]
+    }
+  ]
+}
+```
+
+`TypeNamespace` and `MethodName` are required values.
