@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Octopus.RoslynAnalysers
+namespace Octopus.UnwantedMethodCallsAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnwantedMethodCallAnalyzer : DiagnosticAnalyzer

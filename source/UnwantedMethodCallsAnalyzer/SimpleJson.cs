@@ -60,7 +60,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using Octopus.RoslynAnalysers.Reflection;
+using Octopus.UnwantedMethodCallsAnalyzer.Reflection;
 #if !SIMPLE_JSON_NO_LINQ_EXPRESSION
 using System.Linq.Expressions;
 #endif
@@ -71,7 +71,7 @@ using System.Dynamic;
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace Octopus.RoslynAnalysers
+namespace Octopus.UnwantedMethodCallsAnalyzer
 {
     /// <summary>
     /// Represents the json array.

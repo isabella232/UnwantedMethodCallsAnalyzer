@@ -5,8 +5,8 @@ using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
 using NUnit.Framework;
-using Octopus.RoslynAnalysers;
-using Verify = Microsoft.CodeAnalysis.CSharp.Testing.NUnit.AnalyzerVerifier<Octopus.RoslynAnalysers.UnwantedMethodCallAnalyzer>;
+using Octopus.UnwantedMethodCallsAnalyzer;
+using Verify = Microsoft.CodeAnalysis.CSharp.Testing.NUnit.AnalyzerVerifier<Octopus.UnwantedMethodCallsAnalyzer.UnwantedMethodCallAnalyzer>;
 using static Microsoft.CodeAnalysis.Testing.DiagnosticResult;
 
 namespace Tests

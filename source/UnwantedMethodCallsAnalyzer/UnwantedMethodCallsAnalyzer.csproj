@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <Authors>Octopus Deploy</Authors>
-    <AssemblyName>Octopus.RoslynAnalysers</AssemblyName>
-    <RootNamespace>Octopus.RoslynAnalysers</RootNamespace>
-    <PackageProjectUrl>https://github.com/OctopusDeploy/RoslynAnalysers</PackageProjectUrl>
+    <AssemblyName>Octopus.UnwantedMethodCallsAnalyzer</AssemblyName>
+    <RootNamespace>Octopus.UnwantedMethodCallsAnalyzer</RootNamespace>
+    <PackageProjectUrl>https://github.com/OctopusDeploy/UnwantedMethodCallsAnalyzer</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
     <Nullable>enable</Nullable>
