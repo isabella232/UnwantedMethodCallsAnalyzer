@@ -33,6 +33,7 @@ namespace Octopus.UnwantedMethodCallsAnalyzer
             Description);
 
         static UnwantedMethod[] unwantedMethodsCache = new UnwantedMethod[0];
+        HashSet<string> unwantedMethodNames = new HashSet<string>();
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -57,6 +58,8 @@ namespace Octopus.UnwantedMethodCallsAnalyzer
 
             if (unwantedMethodsCache.Any())
                 context.RegisterSyntaxNodeAction(CheckUnwantedMethodCalls, SyntaxKind.InvocationExpression);
+
+            unwantedMethodNames = unwantedMethodsCache.Select(m => m.MethodName).ToHashSet();
         }
 
         void CheckUnwantedMethodCalls(SyntaxNodeAnalysisContext context)
@@ -64,6 +67,10 @@ namespace Octopus.UnwantedMethodCallsAnalyzer
             var expressionSyntax = (InvocationExpressionSyntax)context.Node;
             var memberAccessExpression = expressionSyntax.Expression as MemberAccessExpressionSyntax;
             if (memberAccessExpression == null) return;
+
+            var methodName = memberAccessExpression.Name.Identifier.Text;
+            if (!unwantedMethodNames.Contains(methodName))
+                return; // Short circuit as GetSymbolInfo is an expensive call
 
             var memberSymbol = ModelExtensions.GetSymbolInfo(context.SemanticModel, memberAccessExpression).Symbol as IMethodSymbol;
             if (memberSymbol == null) return;
