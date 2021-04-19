@@ -17,6 +17,9 @@
     <Content Include="..\.gitignore">
       <Link>config\.gitignore</Link>
     </Content>
+    <Content Include="..\octoversion.json">
+      <Link>config\octoversion.json</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
