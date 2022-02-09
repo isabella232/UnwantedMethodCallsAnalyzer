@@ -60,7 +60,7 @@ namespace Octopus.UnwantedMethodCallsAnalyzer
             if (unwantedMethodsCache.Any())
                 context.RegisterSyntaxNodeAction(CheckUnwantedMethodCalls, SyntaxKind.InvocationExpression);
 
-            unwantedMethodNames = unwantedMethodsCache.Select(m => m.MethodName).ToHashSet();
+            unwantedMethodNames = new HashSet<string>(unwantedMethodsCache.Select(m => m.MethodName));
         }
 
         void CheckUnwantedMethodCalls(SyntaxNodeAnalysisContext context)
