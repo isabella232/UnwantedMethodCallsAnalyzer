@@ -34,4 +34,4 @@ The configuration file format is as such:
 }
 ```
 
-`TypeNamespace` and `MethodName` are required values.
+`TypeNamespace` and `MethodName` are required values. 
